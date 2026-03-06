@@ -1,0 +1,113 @@
+#!/usr/bin/env python3
+import argparse
+import json
+import requests
+import time
+import os
+import sys
+
+def get_token(host, username, password):
+    data = {
+        "username": username,
+        "password": password
+    }
+    headers = {
+        "Content-Type": "application/json"
+    }
+    response = requests.post(host + '/login', data=json.dumps(data), headers=headers)
+    if response.status_code == 200:
+        tokenData = json.loads(response.text)
+        return tokenData['token']
+    else:
+        print("Authentication Error")
+        sys.exit(1)
+
+def run_job(host, token, project, profile):
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+    }
+    print(f'Starting APISec run on {project}')
+    response = requests.post(host + f'/api/v1/runs/project/{project}?jobName={profile}&region=&categories=&emailReport=&reportType', headers=headers)
+    data = json.loads(response.text)
+    return data
+
+def get_job_status(host, token, id, status_timeout):
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+    }
+    completed = False
+    timeout = False
+    print('Polling APISec for status updates...')
+    start_time = time.time()
+    while completed == False:
+        response = requests.get(host + f'/api/v1/runs/{id}', headers=headers)
+        data = json.loads(response.text)
+        status = data['data']['task']['status']
+        run_time = time.time() - start_time
+        if data['data']['task']['status'] == 'COMPLETED':
+            completed = True
+        elif run_time > status_timeout:
+            print(f'Giving up after {status_timeout} seconds')
+            break
+        status = data['data']['task']['status']
+        total_tests = data['data']['task']['totalTests']
+        failed_tests = data['data']['task']['failedTests']
+        run_id = data['data']['runId']
+        print(f'Status: {status}, Total Tests: {total_tests}, Total Failed: {failed_tests}, Run ID: {run_id}, Run time: {int(run_time)} seconds')
+        if data['data']['task']['status'] != 'COMPLETED':
+            print('Sleeping for 15 seconds')
+            time.sleep(15)
+    cicd_status = data['data']['ciCdStatus'].split(':')[7]
+    print(f'APISec status page: {host}{cicd_status}')
+    return data
+
+def report_summery(run_id, env_id, token):
+    headers = {
+    'Authorization': f'Bearer {token}',
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    }
+    response = requests.get(f'https://cloud.apisec.ai/api/v1/projects/{run_id}/auto-suggestions/category-counts/active?envId={env_id}', headers=headers)
+    if response.status_code == 200:
+        return json.loads(response.text)
+    else:
+        print(f"Failed to get vulnerabilities: {response.status_code} - {response.text}")
+        return []
+
+def main():
+    print("Starting APISec")
+    parser = argparse.ArgumentParser(description='APISec tool')
+    parser.add_argument('-p', '--project', type=str, help='APISec project (REQUIRED)', required=True)
+    parser.add_argument('--username', default = None, type=str, help='APISec username (You can use the "apisec_username" environment variable instead)')
+    parser.add_argument('--password', default = None, type=str, help='APISec password (You can use the "apisec_password" environment variable instead)')
+    parser.add_argument('--profile', default = "Master", type=str, help='APISec project')
+    parser.add_argument('--hostname', default = "https://cloud.apisec.ai", type=str, help='APISec hostname')
+    parser.add_argument('-r', '--reporting', default = False, type=bool, help='Display ending json status')
+    parser.add_argument('-t', '--timeout', default = 600, type=int, help='Display ending json status')
+    args = parser.parse_args()
+    if args.username == None:
+        try:
+            args.username = os.environ['apisec_username']
+        except:
+            print('You must provide "--username" OR the "apisec_username" environment variable')
+            sys.exit(1)
+    if args.password == None:
+        try:
+            args.password = os.environ['apisec_password']
+        except:
+            print('You must provide "--password" OR the "apisec_password" environment variable')
+            sys.exit(1)
+
+    token = get_token(args.hostname, args.username, args.password)
+    job_data = run_job(args.hostname, token, args.project, args.profile)
+    job_status = get_job_status(args.hostname, token, job_data['data']['id'], args.timeout)
+    if args.reporting == True and job_status != {}:
+        project_vulnerabilities = report_summery(job_status['data']['job']['id'], job_status['data']['job']['environment']['id'], token)
+        print(json.dumps(project_vulnerabilities,indent=2))
+
+if __name__ == "__main__":
+    main()

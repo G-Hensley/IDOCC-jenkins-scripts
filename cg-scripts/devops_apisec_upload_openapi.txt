@@ -1,0 +1,315 @@
+#!/usr/bin/env python3
+import argparse
+import json
+import os
+import sys
+import requests
+
+try:
+    import yaml  # pip install pyyaml
+except ImportError:
+    print("Missing dependency: pyyaml. Install it with `pip install pyyaml`.")
+    sys.exit(1)
+
+
+def get_token(host, username, password):
+    """
+    Authenticate with APISec and return a JWT token.
+
+    Note: Your existing apisecrun.py uses `/login`.
+    If your environment ever changes, you may need `/auth/login` instead.
+    """
+    data = {
+        "username": username,
+        "password": password,
+    }
+    headers = {"Content-Type": "application/json"}
+
+    # Mirror apisecrun.py behavior for consistency
+    login_url = host.rstrip("/") + "/login"
+    # If that ever breaks, try:
+    # login_url = host.rstrip("/") + "/auth/login"
+
+    resp = requests.post(login_url, data=json.dumps(data), headers=headers)
+    if resp.status_code == 200:
+        token_data = resp.json()
+        return token_data["token"]
+    else:
+        print(f"Authentication Error: {resp.status_code} - {resp.text}")
+        sys.exit(1)
+
+
+def get_project_id(host, token, project_name):
+    """
+    Resolve a project name (or refId) to a project ID via /api/v1/projects.
+    """
+    url = host.rstrip("/") + "/api/v1/projects"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+    }
+
+    resp = requests.get(url, headers=headers)
+    if resp.status_code != 200:
+        print(f"Failed to list projects: {resp.status_code} - {resp.text}")
+        sys.exit(1)
+
+    data = resp.json()
+    projects = data.get("data", []) if isinstance(data, dict) else data
+
+    for proj in projects:
+        name = proj.get("name")
+        ref_id = proj.get("refId")
+        if name == project_name or ref_id == project_name:
+            return proj.get("id")
+
+    print(f"Project '{project_name}' not found in /api/v1/projects response.")
+    sys.exit(1)
+
+
+def load_openapi_spec(path):
+    """
+    Load an OpenAPI spec from YAML or JSON.
+    """
+    if not os.path.isfile(path):
+        print(f"OpenAPI file not found: {path}")
+        sys.exit(1)
+
+    with open(path, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    try:
+        # Try JSON first
+        return json.loads(content)
+    except json.JSONDecodeError:
+        try:
+            # Fallback to YAML
+            return yaml.safe_load(content)
+        except yaml.YAMLError as e:
+            print(f"Failed to parse OpenAPI spec as JSON or YAML: {e}")
+            sys.exit(1)
+
+
+def extract_endpoints_from_openapi(spec):
+    """
+    From an OpenAPI spec, build a list of 'method:/path' strings
+    that APISec's Add Endpoint API expects.
+    Example: 'get:/api/v1/users/{id}'
+    """
+    paths = spec.get("paths", {})
+    if not isinstance(paths, dict):
+        print("OpenAPI spec has no valid 'paths' object.")
+        sys.exit(1)
+
+    http_methods = {
+        "get",
+        "post",
+        "put",
+        "delete",
+        "patch",
+        "options",
+        "head",
+        "trace",
+    }
+
+    endpoints = []
+
+    for path, path_item in paths.items():
+        if not isinstance(path_item, dict):
+            continue
+
+        for method, operation in path_item.items():
+            method_lower = method.lower()
+            if method_lower in http_methods:
+                endpoint_str = f"{method_lower}:{path}"
+                endpoints.append(endpoint_str)
+
+    # Deduplicate while preserving order
+    seen = set()
+    unique_endpoints = []
+    for e in endpoints:
+        if e not in seen:
+            seen.add(e)
+            unique_endpoints.append(e)
+
+    return unique_endpoints
+
+
+def push_endpoints(host, token, project_id, endpoints, batch_size=50):
+    """
+    Send endpoints to APISec using the documented Add Endpoint via CLI API:
+      POST /api/v1/endpoint/project/{projectId}
+      Body: [ { "endpoint": "get:/api/v1/..." }, ... ]
+
+    This version:
+      - Treats "already exists" messages as non-fatal.
+      - Shows a clean summary for each batch.
+    """
+    if not endpoints:
+        print("No endpoints extracted from OpenAPI spec; nothing to push.")
+        return
+
+    url = host.rstrip("/") + f"/api/v1/endpoint/project/{project_id}"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+    }
+
+    print(f"Found {len(endpoints)} endpoints in OpenAPI spec.")
+    print(f"Pushing endpoints to project ID {project_id} in batches of {batch_size}...")
+
+    total_added = 0
+    total_duplicates = 0
+    total_other_errors = 0
+
+    for i in range(0, len(endpoints), batch_size):
+        chunk = endpoints[i : i + batch_size]
+        payload = [{"endpoint": ep} for ep in chunk]
+
+        resp = requests.post(url, headers=headers, data=json.dumps(payload))
+
+        # Some tenants still use 200 even with errors in body
+        if resp.status_code not in (200, 201):
+            print(
+                f"Failed to push endpoints batch {i}-{i+len(chunk)-1}: "
+                f"{resp.status_code} - {resp.text}"
+            )
+            sys.exit(1)
+
+        try:
+            data = resp.json()
+        except ValueError:
+            # Non-JSON, assume success but warn
+            print(
+                f"Batch {i}-{i+len(chunk)-1} uploaded (non-JSON response from APISec)."
+            )
+            continue
+
+        # APISec-style response usually has: { errors: bool, messages: [ ... ] }
+        errors_flag = data.get("errors", False)
+        messages = data.get("messages", []) or []
+
+        batch_added = 0
+        batch_duplicates = 0
+        batch_other_errors = 0
+
+        for msg in messages:
+            mtype = msg.get("type")
+            value = (msg.get("value") or "").lower()
+
+            if "already exists" in value:
+                batch_duplicates += 1
+            elif mtype == "ERROR":
+                batch_other_errors += 1
+            else:
+                # Often "INFO" or similar when endpoints are added
+                batch_added += 1
+
+        # Heuristic: if no info messages, assume non-error endpoints are added
+        if not messages and not errors_flag:
+            batch_added = len(chunk)
+
+        total_added += batch_added
+        total_duplicates += batch_duplicates
+        total_other_errors += batch_other_errors
+
+        print(
+            f"Batch {i}-{i+len(chunk)-1} summary: "
+            f"added={batch_added}, duplicates={batch_duplicates}, other_errors={batch_other_errors}"
+        )
+
+        # Only bail out if there are real errors that are NOT duplicates
+        if batch_other_errors > 0:
+            print("Encountered non-duplicate errors from APISec. Full response:")
+            print(json.dumps(data, indent=2))
+            sys.exit(1)
+
+    print(
+        f"All batches processed. "
+        f"Total added={total_added}, duplicates={total_duplicates}, other_errors={total_other_errors}"
+    )
+    if total_other_errors == 0:
+        print("All endpoints uploaded successfully (duplicates were safely ignored).")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Push OpenAPI endpoints into an APISec project"
+    )
+    parser.add_argument(
+        "-p",
+        "--project",
+        type=str,
+        required=True,
+        help="APISec project name or refId (REQUIRED)",
+    )
+    parser.add_argument(
+        "-f",
+        "--file",
+        type=str,
+        required=True,
+        help="Path to OpenAPI/Swagger file (YAML or JSON, REQUIRED)",
+    )
+    parser.add_argument(
+        "--username",
+        default=None,
+        type=str,
+        help='APISec username (or use "apisec_username" env var)',
+    )
+    parser.add_argument(
+        "--password",
+        default=None,
+        type=str,
+        help='APISec password (or use "apisec_password" env var)',
+    )
+    parser.add_argument(
+        "--hostname",
+        default="https://cloud.apisec.ai",
+        type=str,
+        help="APISec hostname (default: https://cloud.apisec.ai)",
+    )
+
+    args = parser.parse_args()
+
+    # Same env var fallback pattern as apisecrun.py
+    if args.username is None:
+        try:
+            args.username = os.environ["apisec_username"]
+        except KeyError:
+            print(
+                'You must provide "--username" OR set the "apisec_username" environment variable'
+            )
+            sys.exit(1)
+
+    if args.password is None:
+        try:
+            args.password = os.environ["apisec_password"]
+        except KeyError:
+            print(
+                'You must provide "--password" OR set the "apisec_password" environment variable'
+            )
+            sys.exit(1)
+
+    host = args.hostname
+
+    print("Authenticating to APISec...")
+    token = get_token(host, args.username, args.password)
+
+    print(f"Resolving project '{args.project}' to project ID...")
+    project_id = get_project_id(host, token, args.project)
+    print(f"Resolved project ID: {project_id}")
+
+    print(f"Loading OpenAPI spec from '{args.file}'...")
+    spec = load_openapi_spec(args.file)
+
+    print("Extracting endpoints from OpenAPI spec...")
+    endpoints = extract_endpoints_from_openapi(spec)
+
+    print("Uploading endpoints to APISec...")
+    push_endpoints(host, token, project_id, endpoints)
+
+
+if __name__ == "__main__":
+    main()
