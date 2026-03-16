@@ -1,0 +1,1720 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "OWASP crAPI API",
+    "version" : "1-oas3"
+  },
+  "externalDocs" : {
+    "description" : "Completely Ridiculous API (crAPI)",
+    "url" : "https://github.com/OWASP/crAPI"
+  },
+  "servers" : [ {
+    "url" : "http://crapi.apisec.ai"
+  } ],
+  "paths" : {
+    "/identity/api/auth/signup" : {
+      "post" : {
+        "tags" : [ "Identity / Auth" ],
+        "summary" : "Sign up",
+        "description" : "Used to create an account",
+        "operationId" : "signup",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "email", "name", "number", "password" ],
+                "type" : "object",
+                "properties" : {
+                  "email" : {
+                    "type" : "string",
+                    "example" : "Cristobal.Weissnat@example.com",
+                    "exampleSetFlag" : true,
+                    "types" : [ "string" ]
+                  },
+                  "name" : {
+                    "type" : "string",
+                    "example" : "Cristobal.Weissnat",
+                    "exampleSetFlag" : true,
+                    "types" : [ "string" ]
+                  },
+                  "number" : {
+                    "type" : "string",
+                    "example" : "6915656974",
+                    "exampleSetFlag" : true,
+                    "types" : [ "string" ]
+                  },
+                  "password" : {
+                    "type" : "string",
+                    "example" : "5hmb0gvyC__hVQg",
+                    "exampleSetFlag" : true,
+                    "types" : [ "string" ]
+                  }
+                },
+                "exampleSetFlag" : false,
+                "types" : [ "object" ]
+              },
+              "exampleSetFlag" : false
+            }
+          }
+        },
+        "security" : [ ]
+      }
+    },
+    "/identity/api/auth/login" : {
+      "post" : {
+        "tags" : [ "Identity / Auth" ],
+        "summary" : "Login",
+        "operationId" : "login",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "email", "password" ],
+                "type" : "object",
+                "properties" : {
+                  "email" : {
+                    "type" : "string",
+                    "example" : "test@example.com",
+                    "exampleSetFlag" : true,
+                    "types" : [ "string" ]
+                  },
+                  "password" : {
+                    "type" : "string",
+                    "example" : "Test!123",
+                    "exampleSetFlag" : true,
+                    "types" : [ "string" ]
+                  }
+                },
+                "exampleSetFlag" : false,
+                "types" : [ "object" ]
+              },
+              "exampleSetFlag" : false
+            }
+          }
+        },
+        "security" : [ ]
+      }
+    },
+    "/identity/api/auth/forget-password" : {
+      "post" : {
+        "tags" : [ "Identity / Auth" ],
+        "summary" : "Forgot Password",
+        "description" : "Sends an OTP to email to reset password",
+        "operationId" : "forgot_password",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "email" ],
+                "type" : "object",
+                "properties" : {
+                  "email" : {
+                    "type" : "string",
+                    "example" : "adam007@example.com",
+                    "exampleSetFlag" : true,
+                    "types" : [ "string" ]
+                  }
+                },
+                "exampleSetFlag" : false,
+                "types" : [ "object" ]
+              },
+              "exampleSetFlag" : false
+            }
+          }
+        },
+        "security" : [ ]
+      }
+    },
+    "/identity/api/auth/v3/check-otp" : {
+      "post" : {
+        "tags" : [ "Identity / Auth" ],
+        "summary" : "Check OTP - Version 3",
+        "description" : "To validate the One-Time-Password sent using `forgot password`",
+        "operationId" : "check_otp_v3",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/OtpForm",
+                "exampleSetFlag" : false
+              },
+              "exampleSetFlag" : false
+            }
+          }
+        },
+        "security" : [ ]
+      }
+    },
+    "/identity/api/auth/v2/check-otp" : {
+      "post" : {
+        "tags" : [ "Identity / Auth" ],
+        "summary" : "Check OTP - Version 2",
+        "description" : "To validate the One-Time-Password sent using `forgot password`",
+        "operationId" : "check_otp_v2",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/OtpForm",
+                "exampleSetFlag" : false
+              },
+              "exampleSetFlag" : false
+            }
+          },
+          "required" : true
+        },
+        "security" : [ ]
+      }
+    },
+    "/identity/api/auth/v4.0/user/login-with-token" : {
+      "post" : {
+        "tags" : [ "Identity / Auth" ],
+        "summary" : "Login with email token",
+        "operationId" : "login_with_token",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/LoginWithEmailToken",
+                "exampleSetFlag" : false
+              },
+              "exampleSetFlag" : false
+            }
+          },
+          "required" : true
+        },
+        "security" : [ ]
+      }
+    },
+    "/identity/api/auth/v2.7/user/login-with-token" : {
+      "post" : {
+        "tags" : [ "Identity / Auth" ],
+        "summary" : "Login with email token - v2.7",
+        "operationId" : "login_with_token_v2_7",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/LoginWithEmailToken",
+                "exampleSetFlag" : false
+              },
+              "exampleSetFlag" : false
+            }
+          },
+          "required" : true
+        },
+        "security" : [ ]
+      }
+    },
+    "/identity/api/v2/user/change-email" : {
+      "post" : {
+        "tags" : [ "Identity / User" ],
+        "summary" : "Change user email",
+        "description" : "Sends token to new email",
+        "operationId" : "change_email",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "new_email", "old_email" ],
+                "type" : "object",
+                "properties" : {
+                  "new_email" : {
+                    "type" : "string",
+                    "example" : "Sofia.Predovic@example.com",
+                    "exampleSetFlag" : true,
+                    "types" : [ "string" ]
+                  },
+                  "old_email" : {
+                    "type" : "string",
+                    "example" : "Cristobal.Weissnat@example.com",
+                    "exampleSetFlag" : true,
+                    "types" : [ "string" ]
+                  }
+                },
+                "exampleSetFlag" : false,
+                "types" : [ "object" ]
+              },
+              "exampleSetFlag" : false
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/identity/api/v2/user/verify-email-token" : {
+      "post" : {
+        "tags" : [ "Identity / User" ],
+        "summary" : "Verify Email Token",
+        "description" : "Verify token sent for changing email",
+        "operationId" : "verify_email_token",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "new_email", "old_email", "token" ],
+                "type" : "object",
+                "properties" : {
+                  "old_email" : {
+                    "type" : "string",
+                    "example" : "Einar.Swaniawski@example.com",
+                    "exampleSetFlag" : true,
+                    "types" : [ "string" ]
+                  },
+                  "new_email" : {
+                    "type" : "string",
+                    "example" : "Danielle.Ankunding@example.com",
+                    "exampleSetFlag" : true,
+                    "types" : [ "string" ]
+                  },
+                  "token" : {
+                    "type" : "string",
+                    "example" : "T9O2s6i3C7o2E8l7X5Y4",
+                    "exampleSetFlag" : true,
+                    "types" : [ "string" ]
+                  }
+                },
+                "exampleSetFlag" : false,
+                "types" : [ "object" ]
+              },
+              "exampleSetFlag" : false
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/identity/api/v2/user/dashboard" : {
+      "get" : {
+        "tags" : [ "Identity / User" ],
+        "summary" : "Get user dashboard data",
+        "operationId" : "get_dashboard",
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/identity/api/v2/user/pictures" : {
+      "post" : {
+        "tags" : [ "Identity / User" ],
+        "summary" : "Update user profile picture",
+        "operationId" : "update_profile_pic",
+        "requestBody" : {
+          "content" : {
+            "multipart/form-data" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "file" : {
+                    "type" : "string",
+                    "format" : "binary",
+                    "exampleSetFlag" : false,
+                    "types" : [ "string" ]
+                  }
+                },
+                "exampleSetFlag" : false,
+                "types" : [ "object" ]
+              },
+              "exampleSetFlag" : false
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/identity/api/v2/user/videos" : {
+      "post" : {
+        "tags" : [ "Identity / User" ],
+        "summary" : "Upload User profile video",
+        "operationId" : "upload_profile_video",
+        "requestBody" : {
+          "content" : {
+            "multipart/form-data" : {
+              "schema" : {
+                "required" : [ "file" ],
+                "type" : "object",
+                "properties" : {
+                  "file" : {
+                    "type" : "string",
+                    "format" : "binary",
+                    "exampleSetFlag" : false,
+                    "types" : [ "string" ]
+                  }
+                },
+                "exampleSetFlag" : false,
+                "types" : [ "object" ]
+              },
+              "exampleSetFlag" : false
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/identity/api/v2/user/videos/{video_id}" : {
+      "get" : {
+        "tags" : [ "Identity / User" ],
+        "summary" : "Get User Profile Video",
+        "description" : "Get the video associated with the user's profile.",
+        "operationId" : "get_profile_video",
+        "parameters" : [ {
+          "name" : "video_id",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64",
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
+          }
+        } ],
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      },
+      "put" : {
+        "tags" : [ "Identity / User" ],
+        "summary" : "Update User Profile Video by video_id",
+        "description" : "Update the video identified by video_id in this user's profile.",
+        "operationId" : "update_profile_video",
+        "parameters" : [ {
+          "name" : "video_id",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64",
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/VideoForm",
+                "exampleSetFlag" : false
+              },
+              "exampleSetFlag" : false
+            }
+          },
+          "required" : true
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      },
+      "delete" : {
+        "tags" : [ "Identity / User" ],
+        "summary" : "Delete Profile Video by video_id",
+        "description" : "Delete the video identified by video_id from this user's profile.",
+        "operationId" : "delete_profile_video",
+        "parameters" : [ {
+          "name" : "video_id",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64",
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
+          }
+        } ],
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/identity/api/v2/user/videos/convert_video" : {
+      "get" : {
+        "tags" : [ "Identity / User" ],
+        "summary" : "Convert Profile Video",
+        "description" : "Convert the format for the specified video.",
+        "operationId" : "convert_profile_video",
+        "parameters" : [ {
+          "name" : "video_id",
+          "in" : "query",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64",
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
+          }
+        } ],
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/identity/api/v2/admin/videos/{video_id}" : {
+      "delete" : {
+        "tags" : [ "Identity / Admin" ],
+        "summary" : "Delete Profile Video Admin",
+        "description" : "Delete profile video of other users by video_id as admin",
+        "operationId" : "admin_delete_profile_video",
+        "parameters" : [ {
+          "name" : "video_id",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64",
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
+          }
+        } ],
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/identity/api/v2/vehicle/vehicles" : {
+      "get" : {
+        "tags" : [ "Identity / Vehicle" ],
+        "summary" : "Get user vehicles",
+        "operationId" : "get_vehicles",
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/identity/api/v2/vehicle/add_vehicle" : {
+      "post" : {
+        "tags" : [ "Identity / Vehicle" ],
+        "summary" : "Add the user vehicle",
+        "operationId" : "add_vehicle",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "pincode", "vin" ],
+                "type" : "object",
+                "properties" : {
+                  "pincode" : {
+                    "type" : "string",
+                    "example" : "9896",
+                    "exampleSetFlag" : true,
+                    "types" : [ "string" ]
+                  },
+                  "vin" : {
+                    "type" : "string",
+                    "example" : "0IOJO38SMVL663989",
+                    "exampleSetFlag" : true,
+                    "types" : [ "string" ]
+                  }
+                },
+                "exampleSetFlag" : false,
+                "types" : [ "object" ]
+              },
+              "exampleSetFlag" : false
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/identity/api/v2/vehicle/{vehicleId}/location" : {
+      "get" : {
+        "tags" : [ "Identity / Vehicle" ],
+        "summary" : "Get Vehicle Location",
+        "description" : "Get user's vehicle location",
+        "operationId" : "get_location",
+        "parameters" : [ {
+          "name" : "vehicleId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "0be319f0-f0dd-44aa-af0b-af927f3a383f",
+            "exampleSetFlag" : true,
+            "types" : [ "string" ]
+          }
+        } ],
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/identity/api/v2/vehicle/resend_email" : {
+      "post" : {
+        "tags" : [ "Identity / Vehicle" ],
+        "summary" : "Resend Vehicle Details Email",
+        "description" : "Resend vehicles details to be added to the user dashboard",
+        "operationId" : "vehicle_resend_email",
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/community/api/v2/community/posts/{postId}" : {
+      "get" : {
+        "tags" : [ "Community / Posts" ],
+        "summary" : "Get Post",
+        "description" : "Used to get a specific post in the forum",
+        "operationId" : "get_post",
+        "parameters" : [ {
+          "name" : "postId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "example" : "tiSTSUzh4BwtvYSLWPsqu9",
+            "exampleSetFlag" : true,
+            "types" : [ "string" ]
+          }
+        } ],
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/community/api/v2/community/posts" : {
+      "post" : {
+        "tags" : [ "Community / Posts" ],
+        "summary" : "Create Post",
+        "description" : "Used to create a new post in the forum",
+        "operationId" : "create_post",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "content" : {
+                    "type" : "string",
+                    "example" : "Est maiores voluptas velit. Necessitatibus vero veniam quos nobis.",
+                    "exampleSetFlag" : true,
+                    "types" : [ "string" ]
+                  },
+                  "title" : {
+                    "type" : "string",
+                    "example" : "Velit quia minima.",
+                    "exampleSetFlag" : true,
+                    "types" : [ "string" ]
+                  }
+                },
+                "exampleSetFlag" : false,
+                "types" : [ "object" ]
+              },
+              "exampleSetFlag" : false
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/community/api/v2/community/posts/{postId}/comment" : {
+      "post" : {
+        "tags" : [ "Community / Posts" ],
+        "summary" : "Post Comment",
+        "description" : "Used to add a comment to an existing post in the forum",
+        "operationId" : "post_comment",
+        "parameters" : [ {
+          "name" : "postId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "example" : "tiSTSUzh4BwtvYSLWPsqu9",
+            "exampleSetFlag" : true,
+            "types" : [ "string" ]
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "content" : {
+                    "type" : "string",
+                    "example" : "Porro aut ratione et.",
+                    "exampleSetFlag" : true,
+                    "types" : [ "string" ]
+                  }
+                },
+                "exampleSetFlag" : false,
+                "types" : [ "object" ]
+              },
+              "exampleSetFlag" : false
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/community/api/v2/community/posts/recent" : {
+      "get" : {
+        "tags" : [ "Community / Posts" ],
+        "summary" : "Get Recent Posts",
+        "description" : "Used to fetch the most recent posts in the forum.",
+        "operationId" : "get_recent_posts",
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/community/api/v2/coupon/new-coupon" : {
+      "post" : {
+        "tags" : [ "Community / Coupon" ],
+        "summary" : "Add a New Coupon",
+        "description" : "Used to add a new coupon to the shop database",
+        "operationId" : "add_new_coupon",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Coupon",
+                "exampleSetFlag" : false
+              },
+              "exampleSetFlag" : false
+            }
+          },
+          "required" : true
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/community/api/v2/coupon/validate-coupon" : {
+      "post" : {
+        "tags" : [ "Community / Coupon" ],
+        "summary" : "Validate Coupon - Version 2",
+        "description" : "Used to validate the provided discount coupon code",
+        "operationId" : "validate_coupon",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "coupon_code" ],
+                "type" : "object",
+                "properties" : {
+                  "coupon_code" : {
+                    "type" : "string",
+                    "example" : "TRAC075",
+                    "exampleSetFlag" : true,
+                    "types" : [ "string" ]
+                  }
+                },
+                "exampleSetFlag" : false,
+                "types" : [ "object" ]
+              },
+              "exampleSetFlag" : false
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/workshop/api/shop/products" : {
+      "get" : {
+        "tags" : [ "Workshop / Shop" ],
+        "summary" : "Get Products",
+        "description" : "Used to get products for the shop",
+        "operationId" : "get_products",
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      },
+      "post" : {
+        "tags" : [ "Workshop / Shop" ],
+        "summary" : "Add A New Product",
+        "description" : "Used to add the specified product to the product catalog.",
+        "operationId" : "add_new_product",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/NewProduct",
+                "exampleSetFlag" : false
+              },
+              "exampleSetFlag" : false
+            }
+          },
+          "required" : true
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/workshop/api/shop/orders" : {
+      "post" : {
+        "tags" : [ "Workshop / Shop" ],
+        "summary" : "Create Order",
+        "description" : "Used to create a new order for a product in the shop.",
+        "operationId" : "create_order",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ProductQuantity",
+                "exampleSetFlag" : false
+              },
+              "exampleSetFlag" : false
+            }
+          },
+          "required" : true
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/workshop/api/shop/orders/{order_id}" : {
+      "get" : {
+        "tags" : [ "Workshop / Shop" ],
+        "summary" : "Get Order Based on ID",
+        "description" : "Used to get the order details for order identified by order_id.",
+        "operationId" : "get_order_byID",
+        "parameters" : [ {
+          "name" : "order_id",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
+          }
+        } ],
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      },
+      "put" : {
+        "tags" : [ "Workshop / Shop" ],
+        "summary" : "Update Order",
+        "description" : "Used to update the order specified by the order_id.",
+        "operationId" : "update_order",
+        "parameters" : [ {
+          "name" : "order_id",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ProductQuantity",
+                "exampleSetFlag" : false
+              },
+              "exampleSetFlag" : false
+            }
+          },
+          "required" : true
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/workshop/api/shop/orders/all" : {
+      "get" : {
+        "tags" : [ "Workshop / Shop" ],
+        "summary" : "Get Orders",
+        "description" : "Used to get user's past orders",
+        "operationId" : "get_orders",
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/workshop/api/shop/orders/return_order" : {
+      "post" : {
+        "tags" : [ "Workshop / Shop" ],
+        "summary" : "Return Order",
+        "description" : "Used to return order specified by the order_id",
+        "operationId" : "return_order",
+        "parameters" : [ {
+          "name" : "order_id",
+          "in" : "query",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "example" : 33,
+            "exampleSetFlag" : true,
+            "types" : [ "integer" ]
+          }
+        } ],
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/workshop/api/shop/apply_coupon" : {
+      "post" : {
+        "tags" : [ "Workshop / Shop" ],
+        "summary" : "Apply Coupon",
+        "description" : "Used to apply the coupon for the current user.",
+        "operationId" : "apply_coupon",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "amount", "coupon_code" ],
+                "type" : "object",
+                "properties" : {
+                  "amount" : {
+                    "type" : "number",
+                    "example" : 75,
+                    "exampleSetFlag" : true,
+                    "types" : [ "number" ]
+                  },
+                  "coupon_code" : {
+                    "type" : "string",
+                    "example" : "TRAC075",
+                    "exampleSetFlag" : true,
+                    "types" : [ "string" ]
+                  }
+                },
+                "exampleSetFlag" : false,
+                "types" : [ "object" ]
+              },
+              "exampleSetFlag" : false
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/workshop/api/shop/return_qr_code" : {
+      "get" : {
+        "tags" : [ "Workshop / Shop" ],
+        "summary" : "Get Workshop",
+        "description" : "Used to get the return qr code image for UPS shipments.",
+        "operationId" : "get_workshop_qr_code",
+        "parameters" : [ {
+          "name" : "Accept",
+          "in" : "header",
+          "description" : "The server doesn't like image/png in accept!",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "example" : "*/*",
+            "exampleSetFlag" : true,
+            "types" : [ "string" ]
+          }
+        } ],
+        "security" : [ { } ]
+      }
+    },
+    "/workshop/api/mechanic/" : {
+      "get" : {
+        "tags" : [ "Workshop / Mechanic" ],
+        "summary" : "Get Mechanics",
+        "description" : "Used to get all the available mechanics",
+        "operationId" : "get_mechanics",
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/workshop/api/merchant/contact_mechanic" : {
+      "post" : {
+        "tags" : [ "Workshop / Mechanic" ],
+        "summary" : "Contact Mechanic",
+        "description" : "Used to contact a mechanic for a service request on your vehicle",
+        "operationId" : "contact_mechanic",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "mechanic_api", "mechanic_code", "number_of_repeats", "problem_details", "repeat_request_if_failed", "vin" ],
+                "type" : "object",
+                "properties" : {
+                  "number_of_repeats" : {
+                    "type" : "number",
+                    "exampleSetFlag" : false,
+                    "types" : [ "number" ]
+                  },
+                  "mechanic_api" : {
+                    "type" : "string",
+                    "exampleSetFlag" : false,
+                    "types" : [ "string" ]
+                  },
+                  "vin" : {
+                    "type" : "string",
+                    "exampleSetFlag" : false,
+                    "types" : [ "string" ]
+                  },
+                  "repeat_request_if_failed" : {
+                    "type" : "boolean",
+                    "exampleSetFlag" : false,
+                    "types" : [ "boolean" ]
+                  },
+                  "problem_details" : {
+                    "type" : "string",
+                    "exampleSetFlag" : false,
+                    "types" : [ "string" ]
+                  },
+                  "mechanic_code" : {
+                    "type" : "string",
+                    "exampleSetFlag" : false,
+                    "types" : [ "string" ]
+                  }
+                },
+                "exampleSetFlag" : false,
+                "types" : [ "object" ]
+              },
+              "example" : {
+                "mechanic_api" : "http://localhost:8000/workshop/api/mechanic/receive_report",
+                "mechanic_code" : "TRAC_JHN",
+                "number_of_repeats" : 1,
+                "repeat_request_if_failed" : false,
+                "problem_details" : "Hi Jhon",
+                "vin" : "8UOLV89RGKL908077"
+              },
+              "exampleSetFlag" : true
+            }
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/workshop/api/mechanic/receive_report" : {
+      "get" : {
+        "tags" : [ "Workshop / Mechanic" ],
+        "summary" : "Create and Assign a Service Report",
+        "description" : "Used to create the service report and assign to the mechanic",
+        "operationId" : "create_service_report",
+        "parameters" : [ {
+          "name" : "mechanic_code",
+          "in" : "query",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "example" : "TRAC_MECH1",
+            "exampleSetFlag" : true,
+            "types" : [ "string" ]
+          }
+        }, {
+          "name" : "problem_details",
+          "in" : "query",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "example" : "My car has engine trouble, and I need urgent help!",
+            "exampleSetFlag" : true,
+            "types" : [ "string" ]
+          }
+        }, {
+          "name" : "vin",
+          "in" : "query",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "example" : "0BZCX25UTBJ987271",
+            "exampleSetFlag" : true,
+            "types" : [ "string" ]
+          }
+        } ],
+        "security" : [ ]
+      }
+    },
+    "/workshop/api/mechanic/mechanic_report" : {
+      "get" : {
+        "tags" : [ "Workshop / Mechanic" ],
+        "summary" : "Get Service Report",
+        "description" : "Used to get the service report specified by the report_id",
+        "operationId" : "get_report_byID",
+        "parameters" : [ {
+          "name" : "report_id",
+          "in" : "query",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 2,
+            "exampleSetFlag" : true,
+            "types" : [ "integer" ]
+          }
+        } ],
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/workshop/api/mechanic/service_requests" : {
+      "get" : {
+        "tags" : [ "Workshop / Mechanic" ],
+        "summary" : "Get Service Reports for a Mechanic",
+        "description" : "Fetch all service requests assigned to this specific mechanic.",
+        "operationId" : "get_service_requests_for_mechanic",
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/workshop/api/mechanic/signup" : {
+      "post" : {
+        "tags" : [ "Workshop / Mechanic" ],
+        "summary" : "New Mechanic Signup",
+        "description" : "Used to register a new mechanic in the workshop.",
+        "operationId" : "mechanic_signup",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "required" : [ "email", "mechanic_code", "name", "number", "password" ],
+                "type" : "object",
+                "properties" : {
+                  "name" : {
+                    "type" : "string",
+                    "exampleSetFlag" : false,
+                    "types" : [ "string" ]
+                  },
+                  "email" : {
+                    "type" : "string",
+                    "format" : "email",
+                    "exampleSetFlag" : false,
+                    "types" : [ "string" ]
+                  },
+                  "number" : {
+                    "type" : "string",
+                    "exampleSetFlag" : false,
+                    "types" : [ "string" ]
+                  },
+                  "password" : {
+                    "type" : "string",
+                    "exampleSetFlag" : false,
+                    "types" : [ "string" ]
+                  },
+                  "mechanic_code" : {
+                    "type" : "string",
+                    "exampleSetFlag" : false,
+                    "types" : [ "string" ]
+                  }
+                },
+                "exampleSetFlag" : false,
+                "types" : [ "object" ]
+              },
+              "exampleSetFlag" : false
+            }
+          },
+          "required" : true
+        },
+        "security" : [ ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "Order" : {
+        "required" : [ "created_on", "id", "product", "user" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "readOnly" : true,
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
+          },
+          "user" : {
+            "$ref" : "#/components/schemas/User",
+            "exampleSetFlag" : false
+          },
+          "product" : {
+            "$ref" : "#/components/schemas/Product",
+            "exampleSetFlag" : false
+          },
+          "quantity" : {
+            "type" : "integer",
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/OrderStatusEnum",
+            "exampleSetFlag" : false
+          },
+          "created_on" : {
+            "type" : "string",
+            "format" : "date-time",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
+      },
+      "User" : {
+        "required" : [ "email" ],
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "number" : {
+            "type" : "string",
+            "nullable" : true,
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
+      },
+      "NewProduct" : {
+        "required" : [ "image_url", "name", "price" ],
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "price" : {
+            "type" : "string",
+            "format" : "decimal",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "image_url" : {
+            "type" : "string",
+            "format" : "url",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
+      },
+      "Product" : {
+        "required" : [ "id", "image_url", "name", "price" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "readOnly" : true,
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
+          },
+          "name" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "price" : {
+            "type" : "string",
+            "format" : "decimal",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "image_url" : {
+            "type" : "string",
+            "format" : "url",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
+      },
+      "OrderStatusEnum" : {
+        "type" : "string",
+        "exampleSetFlag" : false,
+        "types" : [ "string" ],
+        "enum" : [ "delivered", "return pending", "returned" ]
+      },
+      "ProductQuantity" : {
+        "required" : [ "product_id", "quantity" ],
+        "type" : "object",
+        "properties" : {
+          "product_id" : {
+            "type" : "integer",
+            "example" : 1,
+            "exampleSetFlag" : true,
+            "types" : [ "integer" ]
+          },
+          "quantity" : {
+            "type" : "integer",
+            "example" : 1,
+            "exampleSetFlag" : true,
+            "types" : [ "integer" ]
+          }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
+      },
+      "Post" : {
+        "title" : "Post",
+        "required" : [ "CreatedAt", "author", "authorid", "comments", "content", "id", "title" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "title" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "content" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "author" : {
+            "$ref" : "#/components/schemas/Author",
+            "exampleSetFlag" : false
+          },
+          "comments" : {
+            "type" : "array",
+            "exampleSetFlag" : false,
+            "items" : {
+              "type" : "string",
+              "exampleSetFlag" : false,
+              "types" : [ "string" ]
+            },
+            "types" : [ "array" ]
+          },
+          "authorid" : {
+            "type" : "integer",
+            "format" : "int32",
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
+          },
+          "CreatedAt" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          }
+        },
+        "example" : {
+          "id" : "ConZLXacq3MqhbLQDrbNLf",
+          "title" : "Title 3",
+          "content" : "Hello world 3",
+          "author" : {
+            "nickname" : "Hacker",
+            "email" : "hacker@darkweb.com",
+            "vehicleid" : "abac4018-5a38-466c-ab7f-361908afeab6",
+            "profile_pic_url" : "",
+            "created_at" : "2021-09-16T01:46:32.432Z"
+          },
+          "comments" : [ ],
+          "authorid" : 3,
+          "CreatedAt" : "2021-09-16T01:46:32.432Z"
+        },
+        "exampleSetFlag" : true,
+        "types" : [ "object" ]
+      },
+      "Author" : {
+        "title" : "Author",
+        "required" : [ "created_at", "email", "nickname", "profile_pic_url", "vehicleid" ],
+        "type" : "object",
+        "properties" : {
+          "nickname" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "email" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "vehicleid" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "profile_pic_url" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "created_at" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          }
+        },
+        "example" : {
+          "nickname" : "Hacker",
+          "email" : "hacker@darkweb.com",
+          "vehicleid" : "abac4018-5a38-466c-ab7f-361908afeab6",
+          "profile_pic_url" : "",
+          "created_at" : "2021-09-16T01:46:32.432Z"
+        },
+        "exampleSetFlag" : true,
+        "types" : [ "object" ]
+      },
+      "VideoForm" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64",
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
+          },
+          "videoName" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "video_url" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "conversion_params" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
+      },
+      "CRAPIResponse" : {
+        "type" : "object",
+        "properties" : {
+          "message" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "status" : {
+            "type" : "integer",
+            "format" : "int32",
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
+          }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
+      },
+      "OtpForm" : {
+        "required" : [ "email", "otp", "password" ],
+        "type" : "object",
+        "properties" : {
+          "otp" : {
+            "maxLength" : 4,
+            "minLength" : 3,
+            "type" : "string",
+            "example" : "9969",
+            "exampleSetFlag" : true,
+            "types" : [ "string" ]
+          },
+          "password" : {
+            "maxLength" : 30,
+            "minLength" : 5,
+            "type" : "string",
+            "example" : "5hmb0gvyC__hVQg",
+            "exampleSetFlag" : true,
+            "types" : [ "string" ]
+          },
+          "email" : {
+            "maxLength" : 30,
+            "minLength" : 5,
+            "type" : "string",
+            "example" : "Cristobal.Weissnat@example.com",
+            "exampleSetFlag" : true,
+            "types" : [ "string" ]
+          }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
+      },
+      "JwtResponse" : {
+        "type" : "object",
+        "properties" : {
+          "token" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "type" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "message" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "role" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ],
+            "enum" : [ "ROLE_UNDEFINED", "ROLE_USER", "ROLE_MECHANIC", "ROLE_ADMIN" ]
+          }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
+      },
+      "LoginWithEmailToken" : {
+        "required" : [ "email", "token" ],
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "maxLength" : 60,
+            "minLength" : 3,
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "token" : {
+            "maxLength" : 60,
+            "minLength" : 3,
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
+      },
+      "ProfileVideo" : {
+        "required" : [ "converstion_params", "id", "user", "video", "video_name" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "number",
+            "exampleSetFlag" : false,
+            "types" : [ "number" ]
+          },
+          "video_name" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "conversion_params" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "video" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "user" : {
+            "$ref" : "#/components/schemas/User",
+            "exampleSetFlag" : false
+          }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
+      },
+      "Coupon" : {
+        "required" : [ "amount", "coupon_code" ],
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "coupon_code" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          },
+          "createdAt" : {
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
+          }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
+      },
+      "ServiceRequests" : {
+        "title" : "Service Requests",
+        "required" : [ "service_requests" ],
+        "type" : "object",
+        "properties" : {
+          "service_requests" : {
+            "type" : "array",
+            "exampleSetFlag" : false,
+            "items" : {
+              "required" : [ "created_on", "id", "mechanic", "vehicle" ],
+              "type" : "object",
+              "properties" : {
+                "id" : {
+                  "type" : "integer",
+                  "readOnly" : true,
+                  "exampleSetFlag" : false,
+                  "types" : [ "integer" ]
+                },
+                "mechanic" : {
+                  "required" : [ "id", "mechanic_code", "user" ],
+                  "type" : "object",
+                  "properties" : {
+                    "id" : {
+                      "type" : "integer",
+                      "readOnly" : true,
+                      "exampleSetFlag" : false,
+                      "types" : [ "integer" ]
+                    },
+                    "mechanic_code" : {
+                      "type" : "string",
+                      "exampleSetFlag" : false,
+                      "types" : [ "string" ]
+                    },
+                    "user" : {
+                      "required" : [ "email" ],
+                      "type" : "object",
+                      "properties" : {
+                        "email" : {
+                          "type" : "string",
+                          "exampleSetFlag" : false,
+                          "types" : [ "string" ]
+                        },
+                        "number" : {
+                          "type" : "string",
+                          "nullable" : true,
+                          "exampleSetFlag" : false,
+                          "types" : [ "string" ]
+                        }
+                      },
+                      "exampleSetFlag" : false,
+                      "types" : [ "object" ]
+                    }
+                  },
+                  "exampleSetFlag" : false,
+                  "types" : [ "object" ]
+                },
+                "vehicle" : {
+                  "required" : [ "id", "owner", "vin" ],
+                  "type" : "object",
+                  "properties" : {
+                    "id" : {
+                      "type" : "integer",
+                      "readOnly" : true,
+                      "exampleSetFlag" : false,
+                      "types" : [ "integer" ]
+                    },
+                    "vin" : {
+                      "type" : "string",
+                      "exampleSetFlag" : false,
+                      "types" : [ "string" ]
+                    },
+                    "owner" : {
+                      "required" : [ "email" ],
+                      "type" : "object",
+                      "properties" : {
+                        "email" : {
+                          "type" : "string",
+                          "exampleSetFlag" : false,
+                          "types" : [ "string" ]
+                        },
+                        "number" : {
+                          "type" : "string",
+                          "nullable" : true,
+                          "exampleSetFlag" : false,
+                          "types" : [ "string" ]
+                        }
+                      },
+                      "exampleSetFlag" : false,
+                      "types" : [ "object" ]
+                    }
+                  },
+                  "exampleSetFlag" : false,
+                  "types" : [ "object" ]
+                },
+                "problem_details" : {
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "status" : {
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ],
+                  "enum" : [ "Pending", "Finished" ]
+                },
+                "created_on" : {
+                  "type" : "string",
+                  "format" : "date-time",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                }
+              },
+              "exampleSetFlag" : false,
+              "types" : [ "object" ]
+            },
+            "types" : [ "array" ]
+          }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
+      }
+    },
+    "securitySchemes" : {
+      "bearerAuth" : {
+        "type" : "http",
+        "scheme" : "bearer",
+        "bearerFormat" : "JWT"
+      }
+    },
+    "extensions" : { },
+    "parameters" : { }
+  }
+}
